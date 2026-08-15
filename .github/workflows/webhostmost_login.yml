@@ -1,40 +1,26 @@
-# 任务名称：WebHostMost自动登录保活
 name: WebHostMost Login
 
-# 触发规则
 on:
   schedule:
-    # cron表达式 分 时 日 月 星期
-    # UTC时间每月20号 0点 → 北京时间上午8点
-    - cron: '0 0 20 * *'
-  workflow_dispatch:  #开启手动运行按钮，可以随时点一下立即执行
+    - cron: '0 0 20 * *'  # 每月20号UTC0点（北京时间早8点）
+  workflow_dispatch:       # 允许手动运行
 
 jobs:
-  # 任务名称
   login:
-    # 使用Ubuntu虚拟机环境运行
     runs-on: ubuntu-latest
     steps:
-      # 步骤1：下载你仓库里面所有代码文件到虚拟机
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 步骤2：安装Node.js运行环境，版本18，关闭npm缓存
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-          cache: "none" #禁用缓存，防止还是装上旧的依赖包
 
-      # 步骤3：清理旧依赖，强制安装可以用require写法的 puppeteer@21
       - name: Install dependencies
-        run: |
-          rm -rf node_modules package-lock.json #彻底删除之前残留的依赖文件
-          npm install puppeteer@21 #固定安装21版本，规避ESM报错
+        run: npm install puppeteer@latest
 
-      # 步骤4：传入账号密码环境变量、运行登录脚本
       - name: Run login script
         env:
-          #读取仓库密钥里面存放的账号密码JSON
           USERNAME_AND_PASSWORD: ${{ secrets.USERNAME_AND_PASSWORD }}
-        run: node scripts/login.js #执行js登录脚本
+        run: node scripts/login.js
