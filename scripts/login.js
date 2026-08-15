@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 
 async function login(username, password) {
   console.log(`Attempting to login with username: ${username}`);
